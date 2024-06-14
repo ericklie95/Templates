@@ -1,0 +1,69 @@
+Function GetRowValues(rowNum As Long, sheetName As String) As Variant
+	' Get all values on the rows stored in an array.
+    Dim ws As Worksheet
+    Dim lastCol As Long
+    Dim rowData() As Variant
+    Dim colIndex As Long
+
+    ' Set the worksheet
+    Set ws = ThisWorkbook.Sheets(sheetName)
+
+    ' Find the last column in the specified row
+    lastCol = ws.Cells(rowNum, ws.Columns.Count).End(xlToLeft).Column
+
+    ' Resize the array to hold the row data
+    ReDim rowData(1 To lastCol)
+
+    ' Loop through each column in the row and store the values in the array
+    For colIndex = 1 To lastCol
+        rowData(colIndex) = ws.Cells(rowNum, colIndex).Value
+    Next colIndex
+
+    ' Return the array containing row values
+    GetRowValues = rowData
+End Functionw
+
+Function ChooseWorksheet() As String
+	' Prompts the user to choose from available worksheets and returns the name of the selected worksheet
+    Dim ws As Worksheet
+    Dim wsNames() As String
+    Dim selectedSheetIndex As Integer
+
+    ' Collect worksheet names into an array
+    ReDim wsNames(1 To ThisWorkbook.Worksheets.Count)
+    For Each ws In ThisWorkbook.Worksheets
+        wsNames(ws.Index) = ws.Name
+    Next ws
+
+    ' Prompt user to choose from available worksheets
+    selectedSheetIndex = Application.InputBox("Select a worksheet:" & vbCrLf & Join(wsNames, vbCrLf), Type:=1)
+
+    ' Return the name of the selected worksheet
+    If selectedSheetIndex > 0 And selectedSheetIndex <= ThisWorkbook.Worksheets.Count Then
+        ChooseWorksheet = wsNames(selectedSheetIndex)
+    Else
+        MsgBox "Invalid selection!"
+    End If
+End Function
+
+Function ContainsCheck(inputString As String, letterComparison as String) As Boolean
+    ContainsCheck = InStr(1, inputString, letterComparison, vbTextCompare) > 0
+End Function
+
+
+Function SaveVariableToFile(variableToSave As Variant, filePath As String) As Boolean
+    Dim fileNum As Integer
+    
+    ' Open the file for writing
+    fileNum = FreeFile
+    Open filePath For Output As fileNum
+    
+    ' Write the variable value to the file
+    Print #fileNum, variableToSave
+    
+    ' Close the file
+    Close fileNum
+    
+    ' Return True to indicate success
+    SaveVariableToFile = True
+End Function
